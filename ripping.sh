@@ -9,7 +9,7 @@ usage_exit()
   echo "       -c: chapterize" 1>&2
   echo "       -d: dryrun" 1>&2
   echo "       -e: x265, x264 (default: x265)" 1>&2
-  echo "       -i: input filename (default: /dev/disk2)" 1>&2
+  echo "       -i: input filename (default: /dev/disk3)" 1>&2
   echo "       -o: output filename (default: input.mp4)" 1>&2
   echo "       -t: target title num (default: 1)" 1>&2
   exit 1
@@ -36,7 +36,7 @@ case $OPT in
     output=$(dirname $input)/$(basename $input .$fext)
     ;;
   o)
-    input=${input:=/dev/disk2}
+    input=${input:=/dev/disk3}
     output=$OPTARG
     ;;
   t)
@@ -63,7 +63,7 @@ if [ -z "$output" ]; then
 fi
 
 if [ "$b_bluray" ]; then
-  makemkvcon mkv dev:/dev/disk2 all ./
+  makemkvcon mkv dev:/dev/disk3 all ./
   exit 0
 fi
 
@@ -75,7 +75,7 @@ if [ $b_split ]; then
   fi
 
   if [ ${input##*.} = "mkv" ]; then
-    chapter_num=`ffmpeg -i title00.mkv 2>&1 | grep Chapter | tail -n 1 | awk '{print $4}'`
+    chapter_num=`ffmpeg -i $input 2>&1 | grep Chapter | tail -n 1 | awk '{print $4}'`
   else
     chapter_num=`lsdvd $input | grep Title:\ $target_title_num.*Chapter | awk '{gsub(/,/,""); print $6}'`
   fi
